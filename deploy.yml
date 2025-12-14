@@ -1,0 +1,31 @@
+# .github/workflows/deploy.yml
+name: Deploy Worker
+
+on:
+  push:
+    branches: [ main ] # Se activa en cada push a la rama main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Ejecuta en una máquina virtual Ubuntu
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3 # Descarga el código del repositorio
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # O la versión que uses
+
+    - name: Install dependencies
+      run: npm install # Instala las dependencias de tu proyecto
+
+    - name: Build
+      run: npm run build # Compila tu aplicación
+
+    - name: Deploy to Cloudflare Workers
+      uses: cloudflare/wrangler-action@v3 # Acción para desplegar en Cloudflare
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }} # Usa un secreto de GitHub
+        # Otros parámetros como accountId, workers_dev, etc.
